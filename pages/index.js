@@ -1,43 +1,76 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import InputRange from "../components/InputRange";
 
 export default function Home() {
-  const index = 3;
-  const [rate, setRate] = useState({ c1c2: 50, c1c3: 50, c2c3: 50 });
-  const [r1, setR1] = useState({ v1: 1, v2: 1 });
-  const [r2, setR2] = useState({ v1: 1, v2: 1 });
-  const [r3, setR3] = useState({ v1: 1, v2: 1 });
-  const [tableS1, setTableS1] = useState([[]]);
+  const kriteria = ["Tanggung Jawab", "Jujur", "Disiplin", "Pintar"];
+  const RI = [
+    0, 0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49, 1.51, 1.48, 1.56, 1.57,
+    1.39,
+  ];
+  const [HPP, setHPP] = useState([]);
 
-  function handleChange(e) {
+  const [rate, setRate] = useState([[], [], []]);
+  const [rateResult, setRateResult] = useState([[], [], []]);
+  const [sumRate, setSumRate] = useState([]);
+  const [eigen, setEigen] = useState([[], [], []]);
+  const [sumEigen, setSumEigen] = useState([]);
+  const [averageEigen, setAverageEigen] = useState([]);
+  const [lamdaMax, setLamdaMax] = useState();
+  const [CI, setCI] = useState();
+  const [CR, setCR] = useState();
+
+  useEffect(() => {
+    getHPP();
+  }, []);
+
+  // function init(){
+  //   for(let i=0; i<kriteria.length; i++){
+
+  //   }
+  // }
+
+  function getPermutasi(n, r) {
+    var nFak = 1;
+    var nrFak = 1;
+
+    for (let i = 1; i <= n; i++) {
+      nFak = nFak * i;
+    }
+
+    for (let i = 1; i <= n - r; i++) {
+      nrFak = nrFak * i;
+    }
+
+    return nFak / nrFak;
+  }
+
+  function getHPP() {
+    const p = getPermutasi(kriteria.length, 2);
+    var hp = [];
+    var hpI = [];
+
+    for (let i = 0; i < p / 2; i++) {
+      for (let j = i; j < p / 2; j++) {
+        if (j > i && kriteria[j] != null) {
+          hp.push([kriteria[i], kriteria[j]]);
+          hpI.push([i, j]);
+        }
+      }
+    }
+    setHPP(hpI);
+    // console.log(hp);
+    // console.log(hpI);
+  }
+
+  function handleChange(e, el) {
     setRate({
       ...rate,
-      [e.target.name]: e.target.value,
+      [el[0]]: { ...rate[el[0]], [el[1]]: e.target.value },
     });
   }
 
-  function hc1(e) {
-    setR1({
-      v1: convert(e.target.value),
-      v2: 1 / convert(e.target.value),
-    });
-    handleChange(e);
-  }
-
-  function hc2(e) {
-    setR2({
-      v1: convert(e.target.value),
-      v2: 1 / convert(e.target.value),
-    });
-    handleChange(e);
-  }
-
-  function hc3(e) {
-    setR3({
-      v1: convert(e.target.value),
-      v2: 1 / convert(e.target.value),
-    });
-    handleChange(e);
-  }
+  // console.log(rate);
+  // console.log(rateResult);
 
   function convert(value) {
     switch (value) {
@@ -96,34 +129,135 @@ export default function Home() {
   }
 
   function handleProses1() {
-    var temp = [[], [], []];
-    for (var i = 0; i < index; i++) {
-      for (var j = 0; j < index; j++) {
-        if (i == j) {
+    var temp = [];
+
+    for (let i = 0; i < kriteria.length; i++) {
+      temp.push([]);
+    }
+
+    for (let i = 0; i < kriteria.length; i++) {
+      for (let j = 0; j < kriteria.length; j++) {
+        if (j == i) {
           temp[i][j] = 1;
         } else if (j > i) {
-          if (j == 1 && i == 0) {
-            temp[i][j] = r1.v1;
-          } else if (j == 2 && i == 0) {
-            temp[i][j] = r2.v1;
-          } else if (j == 2 && i == 1) {
-            temp[i][j] = r3.v1;
-          }
-        } else if (j < i) {
-          if (i == 1 && j == 0) {
-            temp[i][j] = r1.v2;
-          } else if (i == 2 && j == 0) {
-            temp[i][j] = r2.v2;
-          } else if (i == 2 && j == 1) {
-            temp[i][j] = r3.v2;
-          }
+          temp[i][j] = convert(rate[i][j]);
         }
       }
     }
-    setTableS1(temp);
+
+    for (let i = 0; i < kriteria.length; i++) {
+      for (let j = 0; j < kriteria.length; j++) {
+        if (j < i) {
+          temp[i][j] = 1 / convert(rate[j][i]);
+        }
+      }
+    }
+    setRateResult(temp);
+    setSumRate(getSumRate(temp));
+    setEigen(getEigen(temp));
+    setTimeout(() => setLamdaMax(getLamdaMax(sumRate, averageEigen)), 100);
+    console.log(rateResult);
   }
 
-  console.log(tableS1);
+  function getSumRate(data) {
+    var sum = [];
+
+    for (let i = 0; i < kriteria.length; i++) {
+      sum.push(0);
+    }
+
+    for (let i = 0; i < kriteria.length; i++) {
+      for (let j = 0; j < kriteria.length; j++) {
+        sum[j] = sum[j] + data[i][j];
+      }
+    }
+
+    return sum;
+  }
+
+  function getEigen(data) {
+    var temp = [];
+    var sum = [];
+
+    for (let i = 0; i < kriteria.length; i++) {
+      sum.push(0);
+      temp.push([]);
+    }
+
+    for (let i = 0; i < kriteria.length; i++) {
+      for (let j = 0; j < kriteria.length; j++) {
+        sum[j] = sum[j] + data[i][j];
+      }
+    }
+
+    for (let i = 0; i < kriteria.length; i++) {
+      for (let j = 0; j < kriteria.length; j++) {
+        temp[i][j] = data[i][j] / sum[j];
+      }
+    }
+
+    setSumEigen(getSumEigen(temp));
+    return temp;
+  }
+
+  function getSumEigen(data) {
+    var sum = [];
+
+    for (let i = 0; i < kriteria.length; i++) {
+      sum.push(0);
+    }
+
+    for (let i = 0; i < kriteria.length; i++) {
+      for (let j = 0; j < kriteria.length; j++) {
+        sum[i] = sum[i] + data[i][j];
+      }
+    }
+
+    setAverageEigen(getAverageEigen(sum));
+    return sum;
+  }
+
+  function getAverageEigen(data) {
+    var average = [];
+
+    for (let i = 0; i < kriteria.length; i++) {
+      average.push(0);
+    }
+
+    for (let i = 0; i < kriteria.length; i++) {
+      average[i] = data[i] / kriteria.length;
+    }
+
+    return average;
+  }
+
+  function getLamdaMax(sumRate, averageEigen) {
+    var lamda = 0;
+    for (let i = 0; i < kriteria.length; i++) {
+      lamda = lamda + sumRate[i] * averageEigen[i];
+    }
+
+    setCI(getCI(lamda));
+
+    return lamda;
+  }
+
+  function getCI(lamda) {
+    var temp;
+
+    temp = (lamda - kriteria.length) / (kriteria.length - 1);
+
+    setCR(getCR(temp));
+
+    return temp;
+  }
+
+  function getCR(ci) {
+    var temp;
+
+    temp = ci / RI[kriteria.length - 1];
+    return temp;
+  }
 
   return (
     <div className="w-full flex flex-col items-center py-20">
@@ -136,96 +270,27 @@ export default function Home() {
             <thead>
               <tr>
                 <th></th>
-                <th>Criteria</th>
-                <th>Rate</th>
-                <th>Criteria</th>
+                <th>Kriteria</th>
+                <th>Rate Nilai</th>
+                <th>Kriteria</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th>1</th>
-                <td>C1</td>
-                <td>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    name="c1c2"
-                    value={rate.c1c2}
-                    onChange={hc1}
-                    step="6.25"
-                    className="cursor-pointer form-range appearance-none w-full rounded-md h-3 p-0 bg-gray-300 focus:outline-none focus:ring-0 focus:shadow-none"
-                  />
-                  <div className="w-full flex justify-between text-xs px-2">
-                    <span>9</span>
-                    <span>7</span>
-                    <span>5</span>
-                    <span>3</span>
-                    <span>1</span>
-                    <span>3</span>
-                    <span>5</span>
-                    <span>7</span>
-                    <span>9</span>
-                  </div>
-                </td>
-                <td>C2</td>
-              </tr>
-              <tr>
-                <th>2</th>
-                <td>C1</td>
-                <td>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    name="c1c3"
-                    value={rate.c1c3}
-                    onChange={hc2}
-                    step="6.25"
-                    className="cursor-pointer form-range appearance-none w-full rounded-md h-3 p-0 bg-gray-300 focus:outline-none focus:ring-0 focus:shadow-none"
-                  />
-                  <div className="w-full flex justify-between text-xs px-2">
-                    <span>9</span>
-                    <span>7</span>
-                    <span>5</span>
-                    <span>3</span>
-                    <span>1</span>
-                    <span>3</span>
-                    <span>5</span>
-                    <span>7</span>
-                    <span>9</span>
-                  </div>
-                </td>
-                <td>C3</td>
-              </tr>
-              <tr>
-                <th>3</th>
-                <td>C2</td>
-                <td>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    name="c2c3"
-                    value={rate.c2c3}
-                    onChange={hc3}
-                    step="6.25"
-                    className="cursor-pointer form-range appearance-none w-full rounded-md h-3 p-0 bg-gray-300 focus:outline-none focus:ring-0 focus:shadow-none"
-                  />
-                  <div className="w-full flex justify-between text-xs px-2">
-                    <span>9</span>
-                    <span>7</span>
-                    <span>5</span>
-                    <span>3</span>
-                    <span>1</span>
-                    <span>3</span>
-                    <span>5</span>
-                    <span>7</span>
-                    <span>9</span>
-                  </div>
-                </td>
-                <td>C3</td>
-              </tr>
+              {HPP.map((el, idx) => {
+                return (
+                  <tr key={idx}>
+                    <th>{idx + 1}</th>
+                    <td>{kriteria[el[0]]}</td>
+                    <td>
+                      <InputRange
+                        value={rate[el[0]][el[1]] ?? 50}
+                        onChange={(e) => handleChange(e, el)}
+                      />
+                    </td>
+                    <td>{kriteria[el[1]]}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -237,26 +302,52 @@ export default function Home() {
       </div>
       <div className="step-1 max-w-7xl w-full mt-16">
         <div className="overflow-x-auto">
-          <table className="table table-zebra w-full">
+          <table className="table table-zebra w-full text-center">
             <thead>
               <tr>
-                <th>Criteria</th>
-                <th>C1</th>
-                <th>C2</th>
-                <th>C3</th>
+                <th>Kriteria</th>
+                {kriteria.map((el, idx) => {
+                  return <th key={idx}>{el}</th>;
+                })}
+                <th colspan={kriteria.length}>Nilai Eigen</th>
+                <th>Jumlah Eigen</th>
+                <th>Rata rata</th>
               </tr>
             </thead>
             <tbody>
-              {tableS1.map((el, idx) => {
+              {kriteria.map((el, idx) => {
                 return (
                   <tr key={idx}>
-                    <th>C {idx + 1}</th>
-                    {el.map((e, i) => {
-                      return <td key={idx}>{e}</td>;
+                    <th>{el}</th>
+                    {rateResult[idx]?.map((e, i) => {
+                      return <td>{parseFloat(e?.toFixed(3)) ?? "-"}</td>;
                     })}
+                    {eigen[idx]?.map((e, i) => {
+                      return <td>{parseFloat(e?.toFixed(3)) ?? "-"}</td>;
+                    })}
+                    <td>{parseFloat(sumEigen[idx]?.toFixed(3)) ?? "-"}</td>
+                    <td>{parseFloat(averageEigen[idx]?.toFixed(3)) ?? "-"}</td>
                   </tr>
                 );
               })}
+              <tr>
+                <th>Jumlah</th>
+                {sumRate.map((el, idx) => {
+                  return <td>{parseFloat(sumRate[idx]?.toFixed(3)) ?? "-"}</td>;
+                })}
+              </tr>
+              <tr>
+                <th>Lamda Max</th>
+                <td>{parseFloat(lamdaMax?.toFixed(3)) ?? "-"}</td>
+              </tr>
+              <tr>
+                <th>CI</th>
+                <td>{parseFloat(CI?.toFixed(3)) ?? "-"}</td>
+              </tr>
+              <tr>
+                <th>CR</th>
+                <td>{parseFloat(CR?.toFixed(3)) ?? "-"}</td>
+              </tr>
             </tbody>
           </table>
         </div>
