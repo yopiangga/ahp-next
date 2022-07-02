@@ -2,44 +2,32 @@ import { useEffect, useState } from "react";
 import InputRange from "../components/InputRange";
 
 export default function Home() {
-  const kriteria = ["Tanggung Jawab", "Jujur", "Disiplin"];
-  const alternatif = ["Paiman", "Paijo", "Paino"];
+  const kriteria = ["Tanggung Jawab", "Jujur", "Disiplin", "Pintar"];
   const RI = [
     0, 0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49, 1.51, 1.48, 1.56, 1.57,
     1.39,
   ];
   const [HPP, setHPP] = useState([]);
 
-  const [rate, setRate] = useState([[]]);
-  const [rateResult, setRateResult] = useState([[]]);
+  const [rate, setRate] = useState([[], [], []]);
+  const [rateResult, setRateResult] = useState([[], [], []]);
   const [sumRate, setSumRate] = useState([]);
-  const [eigen, setEigen] = useState([[]]);
+  const [eigen, setEigen] = useState([[], [], []]);
   const [sumEigen, setSumEigen] = useState([]);
   const [averageEigen, setAverageEigen] = useState([]);
-  const [lamdaMax, setLamdaMax] = useState(0);
-  const [CI, setCI] = useState(0);
-  const [CR, setCR] = useState(0);
+  const [lamdaMax, setLamdaMax] = useState();
+  const [CI, setCI] = useState();
+  const [CR, setCR] = useState();
 
   useEffect(() => {
-    init();
     getHPP();
   }, []);
 
-  function init() {
-    var temp1 = [];
-    var temp2 = [];
-    for (let i = 0; i < kriteria.length; i++) {
-      temp1.push(0);
-      temp2.push([0]);
-    }
+  // function init(){
+  //   for(let i=0; i<kriteria.length; i++){
 
-    setRate(temp2);
-    setRateResult(temp2);
-    setSumRate(temp1);
-    setEigen(temp2);
-    setSumEigen(temp1);
-    setAverageEigen(temp1);
-  }
+  //   }
+  // }
 
   function getPermutasi(n, r) {
     var nFak = 1;
@@ -70,6 +58,8 @@ export default function Home() {
       }
     }
     setHPP(hpI);
+    // console.log(hp);
+    // console.log(hpI);
   }
 
   function handleChange(e, el) {
@@ -78,6 +68,9 @@ export default function Home() {
       [el[0]]: { ...rate[el[0]], [el[1]]: e.target.value },
     });
   }
+
+  // console.log(rate);
+  // console.log(rateResult);
 
   function convert(value) {
     switch (value) {
@@ -137,15 +130,6 @@ export default function Home() {
 
   function handleProses1() {
     var temp = [];
-    var tempRate;
-    var tempRateResult;
-    var tempSumRate;
-    var tempEigen;
-    var tempSumEigen;
-    var tempAverageEigen;
-    var tempLamdaMax;
-    var tempCI;
-    var tempCR;
 
     for (let i = 0; i < kriteria.length; i++) {
       temp.push([]);
@@ -168,25 +152,11 @@ export default function Home() {
         }
       }
     }
-
-    // tempRate = temp;
-    tempRateResult = temp;
-    tempSumRate = getSumRate(temp);
-    tempEigen = getEigen(temp);
-    tempSumEigen = getSumEigen(tempEigen);
-    tempAverageEigen = getAverageEigen(tempSumEigen);
-    tempLamdaMax = getLamdaMax(tempSumRate, tempAverageEigen);
-    tempCI = getCI(tempLamdaMax);
-    tempCR = getCR(tempCI);
-
-    setRateResult(tempRateResult);
-    setSumRate(tempSumRate);
-    setEigen(tempEigen);
-    setSumEigen(tempSumEigen);
-    setAverageEigen(tempAverageEigen);
-    setLamdaMax(tempLamdaMax);
-    setCI(tempCI);
-    setCR(tempCR);
+    setRateResult(temp);
+    setSumRate(getSumRate(temp));
+    setEigen(getEigen(temp));
+    setTimeout(() => setLamdaMax(getLamdaMax(sumRate, averageEigen)), 100);
+    console.log(rateResult);
   }
 
   function getSumRate(data) {
@@ -226,6 +196,7 @@ export default function Home() {
       }
     }
 
+    setSumEigen(getSumEigen(temp));
     return temp;
   }
 
@@ -241,6 +212,8 @@ export default function Home() {
         sum[i] = sum[i] + data[i][j];
       }
     }
+
+    setAverageEigen(getAverageEigen(sum));
     return sum;
   }
 
@@ -264,6 +237,8 @@ export default function Home() {
       lamda = lamda + sumRate[i] * averageEigen[i];
     }
 
+    setCI(getCI(lamda));
+
     return lamda;
   }
 
@@ -271,6 +246,8 @@ export default function Home() {
     var temp;
 
     temp = (lamda - kriteria.length) / (kriteria.length - 1);
+
+    setCR(getCR(temp));
 
     return temp;
   }
