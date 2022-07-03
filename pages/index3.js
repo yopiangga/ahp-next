@@ -77,6 +77,9 @@ export default function Home() {
       ...rate,
       [el[0]]: { ...rate[el[0]], [el[1]]: e.target.value },
     });
+
+    console.log(HPP);
+    console.log(rate);
   }
 
   function convert(value) {

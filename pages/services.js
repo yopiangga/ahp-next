@@ -179,3 +179,42 @@ export function getCR(n, ci) {
   temp = ci / RI[n - 1];
   return temp;
 }
+
+export function getScore(nK, nA, avgEigen) {
+  var temp = [];
+  for (let i = 0; i < nA; i++) {
+    temp.push(0);
+  }
+
+  for (let i = 0; i < nA; i++) {
+    for (let j = 0; j < nK; j++) {
+      temp[i] = temp[i] + avgEigen[0][j] * avgEigen[j + 1][i];
+    }
+  }
+  return temp;
+}
+
+export function selectionSort(arr, alternatif) {
+  var temp = [];
+  for (let i = 0; i < arr.length; i++) {
+    temp.push({ title: alternatif[i], skor: arr[i] });
+  }
+
+  for (let n = 0; n < temp.length; n++) {
+    let max = n;
+
+    for (let j = n + 1; j < temp.length; j++) {
+      if (temp[j].skor > temp[max].skor) {
+        max = j;
+      }
+    }
+
+    if (max !== n) {
+      let current = temp[n];
+      temp[n] = temp[max];
+      temp[max] = current;
+    }
+  }
+
+  return temp;
+}
