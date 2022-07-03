@@ -1,3 +1,5 @@
+export default function init() {}
+
 export function getPermutasi(n, r) {
   var nFak = 1;
   var nrFak = 1;

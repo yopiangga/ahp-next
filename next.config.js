@@ -1,6 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-}
-
-module.exports = nextConfig
+module.exports = {
+  images: {
+    loader: "imgix",
+    // path: "http://localhost:3000",
+    path: "https://flarank.netlify.app/",
+  },
+};

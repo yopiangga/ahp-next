@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import InputRange from "../components/InputRange";
 import { TitleComp } from "../components/TitleComp";
-import {
+import init, {
   convert,
   getAverageEigen,
   getCI,
@@ -356,7 +356,7 @@ export default function Home() {
           />
           {kriteria.map((el, idx) => {
             return (
-              <div className="mt-16">
+              <div key={"alternatif" + idx} className="mt-16">
                 <h1 className="text-center text-2xl font-medium mb-8">
                   Perbandingan {el}
                 </h1>
@@ -426,10 +426,18 @@ export default function Home() {
                     <tr key={idx}>
                       <th>{el}</th>
                       {rateResult[0][idx]?.map((e, i) => {
-                        return <td>{parseFloat(e?.toFixed(3)) ?? "-"}</td>;
+                        return (
+                          <td key={"resultRate" + idx}>
+                            {parseFloat(e?.toFixed(3)) ?? "-"}
+                          </td>
+                        );
                       })}
                       {eigen[0][idx]?.map((e, i) => {
-                        return <td>{parseFloat(e?.toFixed(3)) ?? "-"}</td>;
+                        return (
+                          <td key={"resultEigen" + idx}>
+                            {parseFloat(e?.toFixed(3)) ?? "-"}
+                          </td>
+                        );
                       })}
                       <td>{parseFloat(sumEigen[0][idx]?.toFixed(3)) ?? "-"}</td>
                       <td>
@@ -441,7 +449,11 @@ export default function Home() {
                 <tr>
                   <th>Jumlah</th>
                   {sumRate[0].map((e, idx) => {
-                    return <td>{parseFloat(e?.toFixed(3)) ?? "-"}</td>;
+                    return (
+                      <td key={"resultSumRate" + idx}>
+                        {parseFloat(e?.toFixed(3)) ?? "-"}
+                      </td>
+                    );
                   })}
                 </tr>
                 <tr>
@@ -462,7 +474,10 @@ export default function Home() {
 
           {kriteria.map((element, index) => {
             return (
-              <div className="overflow-x-auto mt-16">
+              <div
+                key={"resultAlternatif" + index}
+                className="overflow-x-auto mt-16"
+              >
                 <table className="table table-zebra w-full text-center">
                   <thead>
                     <tr>
@@ -481,10 +496,18 @@ export default function Home() {
                         <tr key={idx}>
                           <th>{el}</th>
                           {rateResult[index + 1]?.[idx]?.map((e, i) => {
-                            return <td>{parseFloat(e?.toFixed(3)) ?? "-"}</td>;
+                            return (
+                              <td key={"resultRateAlternatif" + idx}>
+                                {parseFloat(e?.toFixed(3)) ?? "-"}
+                              </td>
+                            );
                           })}
                           {eigen[index + 1]?.[idx]?.map((e, i) => {
-                            return <td>{parseFloat(e?.toFixed(3)) ?? "-"}</td>;
+                            return (
+                              <td key={"resultEigenAlternatif" + idx}>
+                                {parseFloat(e?.toFixed(3)) ?? "-"}
+                              </td>
+                            );
                           })}
                           <td>
                             {parseFloat(
@@ -502,7 +525,11 @@ export default function Home() {
                     <tr>
                       <th>Jumlah</th>
                       {sumRate[index + 1]?.map((e, idx) => {
-                        return <td>{parseFloat(e?.toFixed(3)) ?? "-"}</td>;
+                        return (
+                          <td key={"resultSumRateAlternatif" + idx}>
+                            {parseFloat(e?.toFixed(3)) ?? "-"}
+                          </td>
+                        );
                       })}
                     </tr>
                     <tr>
@@ -546,7 +573,7 @@ export default function Home() {
               <tbody>
                 {rank.map((el, idx) => {
                   return (
-                    <tr>
+                    <tr key={"resultRank" + idx}>
                       <th>{idx + 1}</th>
                       <td>{el?.title}</td>
                       <td>{parseFloat(el?.skor?.toFixed(3)) ?? "-"}</td>
