@@ -16,8 +16,11 @@ import init, {
 } from "./services";
 
 export default function Home() {
-  const kriteria = ["Tanggung Jawab", "Jujur", "Disiplin"];
-  const alternatif = ["Paiman", "Paijo", "Paino"];
+  const [countKriteria, setCountKriteria] = useState(1);
+  const [countAlternatifKriteria, setCountAlternatifKriteria] = useState(1);
+
+  const [kriteria, setKriteria] = useState([]);
+  const [alternatif, setAlternatif] = useState([]);
 
   const [HPKriteria, setHPKriteria] = useState([]);
   const [HPAlternatif, setHPAlternatif] = useState([]);
@@ -33,42 +36,67 @@ export default function Home() {
   const [CR, setCR] = useState([0]);
   const [rank, setRank] = useState([0]);
 
-  const [proses, setProses] = useState(false);
+  const [proses, setProses] = useState(0);
 
   useEffect(() => {
     init();
-    setHPKriteria(getHPP(kriteria));
-    setHPAlternatif(getHPP(alternatif));
   }, []);
 
+  function handleMulai(e) {
+    setProses(1);
+    e.preventDefault();
+    var tempKriteria = [];
+    var tempAlternatifKriteria = [];
+
+    for (let i = 0; i < countKriteria; i++) {
+      tempKriteria.push("");
+    }
+
+    for (let i = 0; i < countAlternatifKriteria; i++) {
+      tempAlternatifKriteria.push("");
+    }
+
+    setKriteria(tempKriteria);
+    setAlternatif(tempAlternatifKriteria);
+  }
+
+  function handlePelabelan(e) {
+    e.preventDefault();
+    setProses(2);
+    init();
+  }
+
   function init() {
+    setHPKriteria(getHPP(kriteria));
+    setHPAlternatif(getHPP(alternatif));
+
     var temp1 = [];
     var temp2 = [];
     var temp3 = [];
     var temp4 = [];
 
     var r = [];
-    for (let i = 0; i < kriteria.length + 1; i++) {
+    for (let i = 0; i < kriteria?.length + 1; i++) {
       temp1.push(0);
       temp2.push([0]);
     }
-    for (let i = 0; i < alternatif.length + 1; i++) {
+    for (let i = 0; i < alternatif?.length + 1; i++) {
       temp3.push(temp2);
     }
 
-    for (let i = 0; i < alternatif.length + 1; i++) {
+    for (let i = 0; i < alternatif?.length + 1; i++) {
       r.push([]);
-      for (let j = 0; j < kriteria.length + 1; j++) {
+      for (let j = 0; j < kriteria?.length + 1; j++) {
         r[i].push([]);
-        for (let k = 0; k < kriteria.length + 1; k++) {
+        for (let k = 0; k < kriteria?.length + 1; k++) {
           r[i][j].push(0);
         }
       }
     }
 
-    for (let i = 0; i < alternatif.length + 1; i++) {
-      for (let j = 0; j < kriteria.length + 1; j++) {
-        for (let k = 0; k < kriteria.length + 1; k++) {
+    for (let i = 0; i < alternatif?.length + 1; i++) {
+      for (let j = 0; j < kriteria?.length + 1; j++) {
+        for (let k = 0; k < kriteria?.length + 1; k++) {
           r[i][j][k] = 50;
         }
       }
@@ -76,7 +104,7 @@ export default function Home() {
 
     setRate(r);
 
-    for (let i = 0; i < alternatif.length; i++) {
+    for (let i = 0; i < alternatif?.length; i++) {
       temp4.push(0);
     }
 
@@ -99,8 +127,20 @@ export default function Home() {
     });
   }
 
+  function handleChangeLabellingKriteria(index, e) {
+    var temp = [...kriteria];
+    temp[index] = e.target.value;
+    setKriteria(temp);
+  }
+
+  function handleChangeLabellingAlternatif(index, e) {
+    var temp = [...alternatif];
+    temp[index] = e.target.value;
+    setAlternatif(temp);
+  }
+
   function handleProses1() {
-    setProses(true);
+    setProses(3);
     var temp = [];
     var tempRateResult;
     var tempSumRate;
@@ -122,12 +162,12 @@ export default function Home() {
 
     var skor = [];
 
-    for (let i = 0; i < kriteria.length; i++) {
+    for (let i = 0; i < kriteria?.length; i++) {
       temp.push([]);
     }
 
-    for (let i = 0; i < kriteria.length; i++) {
-      for (let j = 0; j < kriteria.length; j++) {
+    for (let i = 0; i < kriteria?.length; i++) {
+      for (let j = 0; j < kriteria?.length; j++) {
         if (j == i) {
           temp[i][j] = 1;
         } else if (j > i) {
@@ -136,8 +176,8 @@ export default function Home() {
       }
     }
 
-    for (let i = 0; i < kriteria.length; i++) {
-      for (let j = 0; j < kriteria.length; j++) {
+    for (let i = 0; i < kriteria?.length; i++) {
+      for (let j = 0; j < kriteria?.length; j++) {
         if (j < i) {
           temp[i][j] = 1 / convert(rate[0][j][i].toString());
         }
@@ -220,7 +260,7 @@ export default function Home() {
 
   return (
     <div className="w-full scrollbar-hide">
-      <div className="w-full flex justify-center fixed bg-white z-50 shadow-md shadow-gray-900/5">
+      <div className="w-full flex justify-center fixed z-50 bg-base-100 shadow-md shadow-gray-900/5">
         <div className="max-w-7xl w-11/12 lg:w-full">
           <div className="navbar bg-base-100">
             <div className="navbar-start">
@@ -300,7 +340,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="w-full flex justify-center py-20 bg-gray-900 text-white">
+      <div className="w-full flex justify-center items-center py-20 bg-gray-900 text-white min-h-screen">
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4 mt-20">
           <h1 className="text-4xl font-bold ">Analitical Hierarchy Process</h1>
           <p className="mt-4">
@@ -308,10 +348,92 @@ export default function Home() {
             eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
             tortor pretium viverra suspendisse.{" "}
           </p>
-          <button className="btn btn-primary mt-4">Start</button>
+          <form className="mt-4" onSubmit={handleMulai}>
+            <div className="flex flex-wrap gap-2 justify-center">
+              <input
+                type="number"
+                min={1}
+                placeholder="Jumlah Kriteria"
+                value={countKriteria}
+                onChange={(e) => {
+                  setCountKriteria(e.target.value);
+                }}
+                class="input input-bordered input-primary w-full max-w-xs"
+              />
+              <input
+                type="number"
+                min={1}
+                placeholder="Jumlah Alternatif"
+                value={countAlternatifKriteria}
+                onChange={(e) => {
+                  setCountAlternatifKriteria(e.target.value);
+                }}
+                class="input input-bordered input-primary w-full max-w-xs"
+              />
+            </div>
+
+            <button className="btn btn-primary mt-4" type="submit">
+              Mulai
+            </button>
+          </form>
         </div>
       </div>
-      <div className="w-full flex justify-center py-20 ">
+      <div
+        className={proses < 1 ? "hidden" : "w-full flex justify-center py-20 "}
+      >
+        <div className="max-w-7xl w-11/12 text-center lg:w-3/4">
+          <TitleComp
+            title="Pelabelan"
+            desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut tortor pretium viverra suspendisse."
+          />
+          <form className="mt-4" onSubmit={handlePelabelan}>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <div className="flex flex-col gap-2 items-center">
+                <h3>Kriteria</h3>
+                {kriteria.map((el, idx) => {
+                  return (
+                    <input
+                      key={"labelKriteria" + idx}
+                      type="text"
+                      placeholder="Nama kriteria"
+                      value={el}
+                      onChange={(e) => {
+                        handleChangeLabellingKriteria(idx, e);
+                      }}
+                      class="input input-bordered input-primary w-full max-w-xs"
+                    />
+                  );
+                })}
+              </div>
+              <div className="flex flex-col gap-2 items-center">
+                <h3>Alternatif</h3>
+                {alternatif.map((el, idx) => {
+                  return (
+                    <input
+                      key={"labelALternatif" + idx}
+                      type="text"
+                      placeholder="Nama Alternatif"
+                      value={el}
+                      onChange={(e) => {
+                        handleChangeLabellingAlternatif(idx, e);
+                      }}
+                      class="input input-bordered input-primary w-full max-w-xs"
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            <button className="btn btn-primary mt-4" type="submit">
+              Simpan
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div
+        className={proses < 2 ? "hidden" : "w-full flex justify-center py-20 "}
+      >
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4">
           <TitleComp
             title="Kriteria"
@@ -328,7 +450,7 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {HPKriteria.map((el, idx) => {
+                {HPKriteria?.map((el, idx) => {
                   return (
                     <tr key={"col-input" + idx}>
                       <th>{idx + 1}</th>
@@ -348,13 +470,15 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="w-full flex justify-center py-20 ">
+      <div
+        className={proses < 2 ? "hidden" : "w-full flex justify-center py-20 "}
+      >
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4">
           <TitleComp
-            title="Alternatif Kriteria"
+            title="Alternatif"
             desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut tortor pretium viverra suspendisse."
           />
-          {kriteria.map((el, idx) => {
+          {kriteria?.map((el, idx) => {
             return (
               <div key={"alternatif" + idx} className="mt-16">
                 <h1 className="text-center text-2xl font-medium mb-8">
@@ -365,9 +489,9 @@ export default function Home() {
                     <thead>
                       <tr>
                         <th></th>
-                        <th>Alternatif Kriteria</th>
+                        <th>Alternatif</th>
                         <th>Rate Nilai</th>
-                        <th>Alternatif Kriteria</th>
+                        <th>Alternatif</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -400,7 +524,9 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className={proses ? "w-full flex justify-center py-20" : "hidden"}>
+      <div
+        className={proses < 3 ? "hidden" : "w-full flex justify-center py-20"}
+      >
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4">
           <TitleComp
             title="Hasil Perhitungan"
@@ -412,16 +538,16 @@ export default function Home() {
               <thead>
                 <tr>
                   <th>Kriteria</th>
-                  {kriteria.map((el, idx) => {
+                  {kriteria?.map((el, idx) => {
                     return <th key={idx}>{el}</th>;
                   })}
-                  <th colSpan={kriteria.length}>Nilai Eigen</th>
+                  <th colSpan={kriteria?.length}>Nilai Eigen</th>
                   <th>Jumlah Eigen</th>
                   <th>Rata rata</th>
                 </tr>
               </thead>
               <tbody>
-                {kriteria.map((el, idx) => {
+                {kriteria?.map((el, idx) => {
                   return (
                     <tr key={idx}>
                       <th>{el}</th>
@@ -472,7 +598,7 @@ export default function Home() {
             </table>
           </div>
 
-          {kriteria.map((element, index) => {
+          {kriteria?.map((element, index) => {
             return (
               <div
                 key={"resultAlternatif" + index}
@@ -554,7 +680,9 @@ export default function Home() {
         </div>
       </div>
 
-      <div className={proses ? "w-full flex justify-center py-20" : "hidden"}>
+      <div
+        className={proses < 3 ? "hidden" : "w-full flex justify-center py-20"}
+      >
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4">
           <TitleComp
             title="Hasil Perangkingan"

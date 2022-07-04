@@ -16,7 +16,7 @@ export function getPermutasi(n, r) {
 }
 
 export function getHPP(kriteria) {
-  const p = getPermutasi(kriteria.length, 2);
+  const p = getPermutasi(kriteria?.length, 2);
   var hpI = [];
 
   for (let i = 0; i < p / 2; i++) {
