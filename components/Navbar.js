@@ -42,7 +42,9 @@ export function Navbar() {
             </div>
           </div>
           <div className="navbar-center">
-            <a className="btn btn-ghost normal-case text-xl">FlaRank</a>
+            <a className="btn btn-ghost normal-case text-xl">
+              <span className="text-primary">Fla</span>Rank
+            </a>
           </div>
           <div className="navbar-end">
             <Link href="https://github.com/yopiangga/ahp-next">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import InputRange from "../components/InputRange";
 import { TitleComp } from "../components/TitleComp";
+import Head from "next/head";
 
 import init, {
   convert,
@@ -262,16 +263,19 @@ export default function Application() {
 
   return (
     <div className="w-full scrollbar-hide">
+      <Head>
+        <title>FlaRank | Pendukung Keputusan</title>
+      </Head>
       <Navbar />
       <div className="w-full flex justify-center items-center py-20 bg-gray-900 text-white min-h-screen">
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4 mt-20">
-          <h1 className="text-4xl font-bold ">Analitical Hierarchy Process</h1>
-          <p className="mt-4">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-            tortor pretium viverra suspendisse.{" "}
+          <h1 className="text-4xl font-bold ">Analytical Hierarchy Process</h1>
+          <p className="mt-6">
+            Hitung rangking dari alternatif kriteria yang anda miliki dengan
+            berbagai pertimbangan kriteria yang ada. Tentukan terlebih dahulu
+            jumlah kriteria dan alternatif-nya sebelum memulai perhitungan{" "}
           </p>
-          <form className="mt-4" onSubmit={handleMulai}>
+          <form className="mt-6" onSubmit={handleMulai}>
             <div className="flex flex-wrap gap-2 justify-center">
               <input
                 type="number"
@@ -281,7 +285,7 @@ export default function Application() {
                 onChange={(e) => {
                   setCountKriteria(e.target.value);
                 }}
-                class="input input-bordered input-primary w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs bg-white text-gray-900"
               />
               <input
                 type="number"
@@ -291,7 +295,7 @@ export default function Application() {
                 onChange={(e) => {
                   setCountAlternatifKriteria(e.target.value);
                 }}
-                class="input input-bordered input-primary w-full max-w-xs"
+                className="input input-bordered input-primary w-full max-w-xs bg-white text-gray-900"
               />
             </div>
 
@@ -307,7 +311,7 @@ export default function Application() {
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4">
           <TitleComp
             title="Pelabelan"
-            desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut tortor pretium viverra suspendisse."
+            desc="Lakukan penamaan atau pelabelan pada kriteria dan alternatif yang akan anda gunakan untuk perhitungan."
           />
           <form className="mt-4" onSubmit={handlePelabelan}>
             <div className="flex flex-wrap gap-4 justify-center">
@@ -323,7 +327,7 @@ export default function Application() {
                       onChange={(e) => {
                         handleChangeLabellingKriteria(idx, e);
                       }}
-                      class="input input-bordered input-primary w-full max-w-xs"
+                      className="input input-bordered input-primary w-full max-w-xs"
                     />
                   );
                 })}
@@ -340,7 +344,7 @@ export default function Application() {
                       onChange={(e) => {
                         handleChangeLabellingAlternatif(idx, e);
                       }}
-                      class="input input-bordered input-primary w-full max-w-xs"
+                      className="input input-bordered input-primary w-full max-w-xs"
                     />
                   );
                 })}
@@ -360,7 +364,7 @@ export default function Application() {
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4">
           <TitleComp
             title="Kriteria"
-            desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut tortor pretium viverra suspendisse."
+            desc="Tentukan nilai perbandingan masing-masing kriteria berdasarkan data yang telah anda miliki."
           />
           <div className="overflow-x-auto mt-10">
             <table className="table table-zebra w-full">
@@ -399,13 +403,13 @@ export default function Application() {
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4">
           <TitleComp
             title="Alternatif"
-            desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut tortor pretium viverra suspendisse."
+            desc="Tentukan nilai perbandingan masing-masing alternatif berdasarkan data yang telah anda miliki."
           />
           {kriteria?.map((el, idx) => {
             return (
               <div key={"alternatif" + idx} className="mt-16">
                 <h1 className="text-center text-2xl font-medium mb-8">
-                  Perbandingan {el}
+                  Perbandingan <span className="text-primary">{el}</span>
                 </h1>
                 <div className="overflow-x-auto scrollbar-hide">
                   <table className="table table-zebra w-full">
@@ -453,14 +457,14 @@ export default function Application() {
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4">
           <TitleComp
             title="Hasil Perhitungan"
-            desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut tortor pretium viverra suspendisse."
+            desc="Tabel berisikan nilai-nilai perhitungan sesuai dengan data nilai yang anda masukkan pada form perbandingan kriteria dan alternatif."
           />
 
           <div className="overflow-x-auto mt-16">
             <table className="table table-zebra w-full text-center">
               <thead>
                 <tr>
-                  <th>Kriteria</th>
+                  <th className="text-primary">Kriteria</th>
                   {kriteria?.map((el, idx) => {
                     return <th key={idx}>{el}</th>;
                   })}
@@ -530,7 +534,7 @@ export default function Application() {
                 <table className="table table-zebra w-full text-center">
                   <thead>
                     <tr>
-                      <th>{element}</th>
+                      <th className="text-primary">{element}</th>
                       {alternatif.map((el, idx) => {
                         return <th key={idx}>{el}</th>;
                       })}
@@ -609,7 +613,7 @@ export default function Application() {
         <div className="max-w-7xl w-11/12 text-center lg:w-3/4">
           <TitleComp
             title="Hasil Perangkingan"
-            desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut tortor pretium viverra suspendisse."
+            desc="Perangkingan didapat dari besarnya nilai skor masing masing alternatif yang dijadikan bahan perhitungan."
           />
 
           <div className="overflow-x-auto mt-16">
@@ -617,7 +621,7 @@ export default function Application() {
               <thead>
                 <tr>
                   <th></th>
-                  <th>Alternatif Kriteria</th>
+                  <th>Alternatif</th>
                   <th>Skor</th>
                 </tr>
               </thead>
